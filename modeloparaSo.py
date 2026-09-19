@@ -131,6 +131,61 @@ print("\n--- LIBERANDO P2 (AQUÍ OCURRE LA COALESCENCIA) ---")
 liberar_memoria("P2", memoria)
 mostrar_memoria(memoria)
 
+# ==============================================================================
+# BLOQUE 4: CPU Y RELOJ — SCHEDULER ROUND ROBIN
+# ==============================================================================
+
+QUANTUM_LIMITE = 2
+
+# Memoria nueva y procesos frescos
+memoria = [BloqueMemoria(inicio=0, tamano=1024, libre=True)]
+
+p1 = Proceso(pid="P1", tamano_memoria=200, tiempo_cpu=4)
+p2 = Proceso(pid="P2", tamano_memoria=300, tiempo_cpu=2)
+p3 = Proceso(pid="P3", tamano_memoria=100, tiempo_cpu=1)
+
+# Cargamos con First-Fit (Bloque 2) e ingresamos a cola_listos
+cola_listos = []
+for p in [p1, p2, p3]:
+    asignar_first_fit(p, memoria)   # ← viene del Bloque 2
+    cola_listos.append(p)
+
+# El reloj avanza tick a tick
+tick           = 0
+proceso_actual = None
+quantum_actual = 0
+
+while cola_listos or proceso_actual:
+
+    if proceso_actual is None:
+        proceso_actual = cola_listos.pop(0)
+        quantum_actual = 0
+        proceso_actual.estado = "EJECUTANDO"
+
+    tick           += 1
+    quantum_actual += 1
+    proceso_actual.tiempo_cpu -= 1
+
+    print(f"--- TICK {tick} ---")
+    print(f"CPU: {proceso_actual.pid} | Restante: {proceso_actual.tiempo_cpu} | Quantum: {quantum_actual}/{QUANTUM_LIMITE}")
+
+    if proceso_actual.tiempo_cpu == 0:
+        # Terminó → libera memoria con coalescencia (Bloque 3)
+        proceso_actual.estado = "TERMINADO"
+        liberar_memoria(proceso_actual.pid, memoria)  # ← viene del Bloque 3
+        proceso_actual = None
+        quantum_actual = 0
+
+    elif quantum_actual >= QUANTUM_LIMITE:
+        # Quantum vencido → cambio de contexto, vuelve al final de la cola
+        proceso_actual.estado = "LISTO"
+        cola_listos.append(proceso_actual)
+        proceso_actual = None
+        quantum_actual = 0
+
+    mostrar_memoria(memoria)
+    print(f"Cola listos: {[p.pid for p in cola_listos]}\n")
+
 #probar si queremos liberar P3
 
 #ACTIVIDAD EN EQUIPO (En Google Colab o Editor Python):
