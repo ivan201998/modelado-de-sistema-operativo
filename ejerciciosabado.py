@@ -1,3 +1,13 @@
+
+#ACTIVIDAD PRÁCTICA DEL SÁBADO:
+ #1. Configurar QUANTUM_LIMITE = 2. 
+#2. Crear 3 procesos: 
+      #- P1: Memoria 200 KB, Tiempo CPU 4 ticks 
+      #- P2: Memoria 250 KB, Tiempo CPU 2 ticks 
+      #- P3: Memoria 100 KB, Tiempo CPU 1 tick 
+#3. Asignarles memoria de 1024 kb con First-Fit e ingresarlos a cola_listos. 
+#4. Ejecutar un bucle de ticks hasta que los tres procesos terminen.
+
 # ==============================================================================
 # BLOQUE 1: ESTRUCTURAS BÁSICAS Y MEMORIA INICIAL
 # ==============================================================================
